@@ -1,0 +1,98 @@
+def encrypt(n):
+    with open("Plaintext.txt", "r") as f:
+        plaintext = f.read()
+
+    ciphertext = ""
+    for ch in plaintext:
+        if ch.isalpha():
+            # Check if uppercase
+            base = ord('A') if ch.isupper() else ord('a')
+            # Shift and wrap around
+            shifted = (ord(ch) - base + n) % 26 + base
+            ciphertext += chr(shifted)
+        else:
+            ciphertext += ch
+
+    with open("Ciphertext.txt", "w") as f:
+        f.write(ciphertext)
+    print(f"Encryption complete. Ciphertext written to Ciphertext.txt")
+
+
+def decrypt(n):
+    with open("Ciphertext.txt", "r") as f:
+        ciphertext = f.read()
+
+    plaintext = ""
+    for ch in ciphertext:
+        if ch.isalpha():
+            base = ord('A') if ch.isupper() else ord('a')
+            shifted = (ord(ch) - base - n) % 26 + base
+            plaintext += chr(shifted)
+        else:
+            plaintext += ch
+
+    with open("ExactPlaintext.txt", "w") as f:
+        f.write(plaintext)
+    print(f"Decryption complete. Plaintext written to ExactPlaintext.txt")
+
+
+def advanced_decrypt():
+    with open("Ciphertext.txt", "r") as f:
+        ciphertext = f.read()
+
+    # Try all possible shifts
+    for n in range(26):
+        plaintext = ""
+        for ch in ciphertext:
+            if ch.isalpha():
+                base = ord('A') if ch.isupper() else ord('a')
+                shifted = (ord(ch) - base - n) % 26 + base
+                plaintext += chr(shifted)
+            else:
+                plaintext += ch
+
+        # Basic check: if 'the' or 'and' appears in plaintext (simple English heuristic)
+        if " the " in plaintext.lower() or " and " in plaintext.lower():
+            print(f"Possible key found: {n}")
+            print("Decrypted text preview:\n", plaintext[:200])
+            # Optionally write to file
+            with open("ExactPlaintext.txt", "w") as f:
+                f.write(plaintext)
+            return n
+
+    print("Failed to automatically determine the key.")
+    return None
+
+
+if name == "__main__":
+    # Example usage:
+    n = int(input("Enter shift value (0-25): "))
+    encrypt(n)
+    decrypt(n)
+
+    # Uncomment to try advanced decrypt
+    # advanced_decrypt()
+def menu():
+    while True:
+        print("\nMenu:")
+        print("1. Encrypt")
+        print("2. Decrypt")
+        print("3. Advanced Decrypt")
+        print("4. Exit")
+        choice = input("Choose option: ")
+
+        if choice == "1":
+            n = int(input("Enter shift for encryption (0-25): "))
+            encrypt(n)
+        elif choice == "2":
+            n = int(input("Enter shift for decryption (0-25): "))
+            decrypt(n)
+        elif choice == "3":
+            advanced_decrypt()
+        elif choice == "4":
+            break
+        else:
+            print("Invalid option. Try again.")
+
+if name == "__main__":
+    menu()
